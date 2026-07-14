@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="app-html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فانتازي نهائي كأس العالم | World Cup Fantasy</title>
+    <style>
+        /* الألوان الرسمية والحماسية للمونديال */
+        :root {
+            --pitch-green: #1ebd5d; /* أخضر عشبي زاهي */
+            --grass-dark: #169b4b;  /* أخضر عشب داكن للخطوط */
+            --stadium-blue: #0f172a; /* أزرق داكن جداً يحاكي سماء الملعب */
+            --match-blue: #1e3a8a;   /* أزرق المباريات الرسمي */
+            --fire-red: #ea2b2b;     /* أحمر حماسي ناري */
+            --gold: #f1c40f;         /* ذهبي كأسي */
+            --white: #ffffff;
+            --light-bg: #0b0f19;     /* خلفية ليلية رياضية عميقة */
+        }
+
+        /* تهيئة الخلفية المتحركة للملعب */
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle at center, #111827 0%, var(--light-bg) 100%);
+            font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+            color: #f3f4f6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* خلفية جزيئات كروية متحركة في الخلفية */
+        body::before {
+            content: "⚽";
+            position: absolute;
+            font-size: 150px;
+            opacity: 0.03;
+            top: 10%;
+            left: 5%;
+            animation: rotateBall 20s infinite linear;
+        }
+        body::after {
+            content: "⚽";
+            position: absolute;
+            font-size: 120px;
+            opacity: 0.03;
+            bottom: 10%;
+            right: 5%;
+            animation: rotateBall 15s infinite linear reverse;
+        }
+
+        @keyframes rotateBall {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* الهيدر بتصميم زجاجي عصري مع خط أحمر ناري وأخضر عشبي */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--stadium-blue) 0%, var(--match-blue) 100%);
+            border-bottom: 4px solid var(--pitch-green);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--fire-red), var(--pitch-green), var(--gold));
+        }
+
+        /* زر تحويل اللغة الحماسي */
+        #lang-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, var(--fire-red), #c0392b);
+            color: var(--white);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(234, 43, 43, 0.4);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        #lang-btn:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 6px 20px rgba(234, 43, 43, 0.6);
+        }
+
+        html[dir="ltr"] #lang-btn {
+            left: auto;
+            right: 25px;
+        }
+
+        /* عنوان الهيدر الأساسي بلمعة ذهبية */
+        .header h1 {
+            font-size: 36px;
+            margin: 0 0 10px 0;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            background: linear-gradient(to left, var(--white), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .header p {
+            font-size: 16px;
+            margin: 0;
+            color: #cbd5e1;
+            font-weight: 300;
+        }
+
+        /* حاوية المحتوى وتأثير الدخول */
+        .main-container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                margin: 20px auto;
+            }
+        }
+
+        /* كارت الشرح (الستايل العشبي الرياضي) */
+        .info-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--pitch-green);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* خطوط الملعب المرسومة داخل الكارت */
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent 50%, rgba(30, 189, 93, 0.05) 51%);
+            pointer-events: none;
+        }
+
+        .info-card h2 {
+            font-size: 24px;
+            color: var(--pitch-green);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+
+        .rules-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0 0 0;
+        }
+
+        .rules-list li {
+            position: relative;
+            padding: 15px 35px 15px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        html[dir="ltr"] .rules-list li {
+            padding: 15px 10px 15px 35px;
+        }
+
+        .rules-list li::before {
+            content: "⚽";
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+        }
+
+        html[dir="ltr"] .rules-list li::before {
+            right: auto;
+            left: 5px;
+        }
+
+        /* كارت تسجيل الدخول الناري */
+        .auth-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid var(--match-blue);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: border-color 0.3s;
+        }
+
+        .auth-card:hover {
+            border-color: var(--fire-red);
+        }
+
+        .auth-card h2 {
+            font-size: 26px;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: var(--white);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid #334155;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 15px;
+            color: var(--white);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: var(--pitch-green);
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 10px rgba(30, 189, 93, 0.3);
+        }
+
+        /* زر الدخول الأخضر الوهّاج */
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--pitch-green) 0%, var(--grass-dark) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(30, 189, 93, 0.4);
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 189, 93, 0.6);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            z-index: 1;
+        }
+
+        .divider span {
+            background-color: #0f172a;
+            padding: 0 15px;
+            position: relative;
+            z-index: 2;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        /* زر جوجل الفخم والمنظم */
+        .google-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--white);
+            color: #1e293b;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .google-btn:hover {
+            background-color: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        .toggle-auth {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .toggle-auth span:last-child {
+            color: var(--pitch-green);
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            margin-right: 5px;
+            transition: color 0.2s;
+        }
+
+        html[dir="ltr"] .toggle-auth span:last-child {
+            margin-right: 0;
+            margin-left: 5px;
+        }
+
+        .toggle-auth span:last-child:hover {
+            color: var(--white);
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #ff6b6b;
+            border: 1px solid var(--fire-red);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <button id="lang-btn" onclick="toggleLanguage()">English</button>
+        <h1 id="main-title">🏆 فانتازي نهائي كأس العالم</h1>
+        <p id="subtitle">صمم تشكيلتك التاريخية للمباراة النهائية وتوقع بطل المونديال!</p>
+    </header>
+
+    <main class="main-container">
+        <section class="info-card">
+            <h2 id="about-title">⚽ كيف تلعب؟ 📖</h2>
+            <ul class="rules-list" id="rules-list-items">
+                <li>سجل حسابك مجاناً لتتمكن من اللعب وحفظ نقاطك في لوحة الصدارة.</li>
+                <li>ستحصل على ميزانية افتراضية (100 مليون) لبناء تشكيلة أحلامك للنهائي.</li>
+                <li>يمكنك اختيار 7 لاعبين فقط من كلا المنتخبين المتنافسين.</li>
+                <li>اختر كابتن الفريق ليضاعف لك النقاط وتوقع مسار المباراة للفوز بكأس التحدي!</li>
+            </ul>
+        </section>
+
+        <section class="auth-card">
+            <h2 id="auth-title">تسجيل الدخول 🔑</h2>
+            <div class="error-message" id="error-box"></div>
+            
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label id="email-label">البريد الإلكتروني:</label>
+                    <input type="email" id="email" required placeholder="example@mail.com">
+                </div>
+                <div class="form-group">
+                    <label id="password-label">كلمة المرور:</label>
+                    <input type="password" id="password" required placeholder="******">
+                </div>
+                <button type="submit" class="submit-btn" id="submit-btn-text">دخول</button>
+            </form>
+
+            <div class="divider">
+                <span id="divider-text">أو باستخدام</span>
+            </div>
+
+            <button class="google-btn" id="google-btn" onclick="loginWithGoogle()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.85z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                <span id="google-btn-text">تسجيل الدخول بحساب Google</span>
+            </button>
+
+            <div class="toggle-auth">
+                <span id="toggle-auth-prompt">ليس لديك حساب؟</span>
+                <span id="toggle-auth-action" onclick="toggleAuthMode()">سجل حساباً جديداً</span>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            signInWithPopup, 
+            GoogleAuthProvider 
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+        // إعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_8PipFlsUkP4UKsx4qUmhq0aXqaMP008",
+            authDomain: "wc-fantasy-9a504.firebaseapp.com",
+            databaseURL: "https://wc-fantasy-9a504-default-rtdb.firebaseio.com",
+            projectId: "wc-fantasy-9a504",
+            storageBucket: "wc-fantasy-9a504.firebasestorage.app",
+            messagingSenderId: "331151936050",
+            appId: "1:331151936050:web:8df745f007b5631ffb8a2b",
+            measurementId: "G-K2MFKNWVD6"
+        };
+
+        // تهيئة Firebase والـ Auth
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        let isSignUpMode = false; 
+        let currentLang = 'ar';
+
+        const translations = {
+            ar: {
+                title: "🏆 فانتازي نهائي كأس العالم",
+                subtitle: "صمم تشكيلتك التاريخية للمباراة النهائية وتوقع بطل المونديال!",
+                about: "⚽ كيف تلعب؟ 📖",
+                rules: `
+                    <li>سجل حسابك مجاناً لتتمكن من اللعب وحفظ نقاطك في لوحة الصدارة.</li>
+                    <li>ستحصل على ميزانية افتراضية (100 مليون) لبناء تشكيلة أحلامك للنهائي.</li>
+                    <li>يمكنك اختيار 7 لاعبين فقط من كلا المنتخبين المتنافسين.</li>
+                    <li>اختر كابتن الفريق ليضاعف لك النقاط وتوقع مسار المباراة للفوز بكأس التحدي!</li>
+                `,
+                loginTitle: "تسجيل الدخول 🔑",
+                registerTitle: "إنشاء حساب جديد 👤",
+                email: "البريد الإلكتروني:",
+                password: "كلمة المرور:",
+                loginBtn: "دخول",
+                registerBtn: "تسجيل جديد",
+                or: "أو باستخدام",
+                google: "تسجيل الدخول بحساب Google",
+                noAcc: "ليس لديك حساب؟",
+                hasAcc: "لديك حساب بالفعل؟",
+                toRegister: "سجل حساباً جديداً",
+                toLogin: "سجل الدخول الآن"
+            },
+            en: {
+                title: "🏆 World Cup Final Fantasy",
+                subtitle: "Draft your historic lineup for the final and predict the World Cup champion!",
+                about: "⚽ How to Play? 📖",
+                rules: `
+                    <li>Register for free to save your team and track your points in the leaderboard.</li>
+                    <li>You will get an imaginary budget of 100M to build your final match draft.</li>
+                    <li>Choose exactly 7 players from both competing teams.</li>
+                    <li>Set your Captain for double points and predict match events to win the Challenge Cup!</li>
+                `,
+                loginTitle: "Sign In 🔑",
+                registerTitle: "Create New Account 👤",
+                email: "Email Address:",
+                password: "Password:",
+                loginBtn: "Sign In",
+                registerBtn: "Sign Up",
+                or: "Or Using",
+                google: "Sign In with Google",
+                noAcc: "Don't have an account?",
+                hasAcc: "Already have an account?",
+                toRegister: "Register New Account",
+                toLogin: "Sign In Now"
+            }
+        };
+
+        window.toggleLanguage = function() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            const htmlTag = document.getElementById('app-html');
+            htmlTag.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
+            htmlTag.setAttribute('lang', currentLang);
+
+            document.getElementById('main-title').innerText = translations[currentLang].title;
+            document.getElementById('subtitle').innerText = translations[currentLang].subtitle;
+            document.getElementById('about-title').innerText = translations[currentLang].about;
+            document.getElementById('rules-list-items').innerHTML = translations[currentLang].rules;
+            document.getElementById('email-label').innerText = translations[currentLang].email;
+            document.getElementById('password-label').innerText = translations[currentLang].password;
+            document.getElementById('divider-text').innerText = translations[currentLang].or;
+            document.getElementById('google-btn-text').innerText = translations[currentLang].google;
+            document.getElementById('lang-btn').innerText = currentLang === 'ar' ? 'English' : 'العربية';
+
+            updateAuthUI();
+        };
+
+        window.toggleAuthMode = function() {
+            isSignUpMode = !isSignUpMode;
+            updateAuthUI();
+        };
+
+        function updateAuthUI() {
+            const lang = currentLang;
+            if (isSignUpMode) {
+                document.getElementById('auth-title').innerText = translations[lang].registerTitle;
+                document.getElementById('submit-btn-text').innerText = translations[lang].registerBtn;
+                document.getElementById('toggle-auth-prompt').innerText = translations[lang].hasAcc;
+                document.getElementById('toggle-auth-action').innerText = translations[lang].toLogin;
+            } else {
+                document.getElementById('auth-title').innerText = translations[lang].loginTitle;
+                document.getElementById('submit-btn-text').innerText = translations[lang].loginBtn;
+                document.getElementById('toggle-auth-prompt').innerText = translations[lang].noAcc;
+                document.getElementById('toggle-auth-action').innerText = translations[lang].toRegister;
+            }
+        }
+
+        window.handleAuth = async function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorBox = document.getElementById('error-box');
+            
+            errorBox.style.display = 'none';
+
+            try {
+                if (isSignUpMode) {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    alert(currentLang === 'ar' ? "🎉 تم تسجيل الحساب بنجاح!" : "🎉 Account created successfully!");
+                } else {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                }
+                window.location.href = "game.html";
+            } catch (error) {
+                errorBox.style.display = 'block';
+                errorBox.innerText = error.message;
+            }
+        };
+
+        window.loginWithGoogle = async function() {
+            const errorBox = document.getElementById('error-box');
+            errorBox.style.display = 'none';
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                window.location.href = "game.html";
+            } catch (error) {
+                errorBox.style.display = 'block';
+                errorBox.innerText = error.message;
+            }
+        };
+    </script>
+</body>
+</html>
