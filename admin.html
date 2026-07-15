@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم للأدمن | Admin Panel</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            color: #f3f4f6;
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+        }
+        .admin-box {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        h1 {
+            color: #1ebd5d;
+            margin-bottom: 25px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-arg {
+            background: #00a8e8;
+            color: white;
+        }
+        .btn-eng {
+            background: #cf142b;
+            color: white;
+        }
+        .btn-arg:hover, .btn-eng:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+        }
+        #status-log {
+            background: #0b0f19;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            min-height: 80px;
+            text-align: right;
+            font-family: monospace;
+            font-size: 13px;
+            overflow-y: auto;
+            max-height: 200px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-box">
+        <h1>⚙️ لوحة إدارة الفانتازي</h1>
+        <p>مرحباً بك يا كابتن! من هنا يمكنك جلب اللاعبين وتحديث أسعارهم تلقائياً في قاعدة البيانات الفورية بضغطة زر:</p>
+        
+        <button class="btn btn-arg" onclick="fetchAndUploadPlayers(4820, 'Argentina')">🇦🇷 جلب وتحديث لاعبي الأرجنتين</button>
+        <button class="btn btn-eng" onclick="fetchAndUploadPlayers(4817, 'England')">🏴󠁧󠁢󠁥󠁮󠁧󠁿 جلب وتحديث لاعبي إنجلترا</button>
+
+        <h3>📋 سجل العمليات (Status Log):</h3>
+        <div id="status-log">في انتظار أوامرك...</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+
+        // إعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_8PipFlsUkP4UKsx4qUmhq0aXqaMP008",
+            authDomain: "wc-fantasy-9a504.firebaseapp.com",
+            databaseURL: "https://wc-fantasy-9a504-default-rtdb.firebaseio.com",
+            projectId: "wc-fantasy-9a504",
+            storageBucket: "wc-fantasy-9a504.firebasestorage.app",
+            messagingSenderId: "331151936050",
+            appId: "1:331151936050:web:8df745f007b5631ffb8a2b",
+            measurementId: "G-K2MFKNWVD6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // مفاتيح الـ API الخاصة بك التي حصلت عليها من RapidAPI
+        const apiKey = "035a7c480dmsh406aa0bc6db2910p1ce973jsnc8018c7215b3";
+        const apiHost = "sportapi7.p.rapidapi.com";
+
+        // دالة كتابة السجل على الشاشة
+        function log(message) {
+            const logBox = document.getElementById("status-log");
+            logBox.innerHTML += `<div>⚡ ${message}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        // دالة جلب اللاعبين وحساب الأسعار ورفعهم لـ Firebase
+        window.fetchAndUploadPlayers = function(teamId, teamName) {
+            log(`جاري الاتصال بـ API لجلب لاعبي منتخب ${teamName}...`);
+
+            // رابط جلب تشكيلة الفريق من الـ API
+            const url = `https://${apiHost}/api/v1/team/${teamId}/players`;
+
+            fetch(url, {
+                method: "GET",
+                headers: {
+                    "x-rapidapi-key": apiKey,
+                    "x-rapidapi-host": apiHost
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("فشل الاتصال بالـ API");
+                return response.json();
+            })
+            .then(data => {
+                log(`تم جلب البيانات بنجاح! جاري معالجة اللاعبين...`);
+                
+                // قراءة اللاعبين من استجابة الـ API (تختلف الهيكلية حسب الـ API وسنفترض وجود مصفوفة للاعبين)
+                const apiPlayers = data.players || [];
+                if (apiPlayers.length === 0) {
+                    log(`⚠️ تحذير: لم نجد أي لاعبين في رد الـ API الحالي.`);
+                    return;
+                }
+
+                let count = 0;
+                apiPlayers.forEach(p => {
+                    // تحديد مركز مبسط للعبتنا (GK, DEF, MID, FWD) بناءً على مركز اللاعب الحقيقي
+                    let pos = "MID"; // افتراضي
+                    const apiPos = (p.position || "").toUpperCase();
+                    
+                    if (apiPos.includes("GOAL") || apiPos.includes("GK")) pos = "GK";
+                    else if (apiPos.includes("DEF") || apiPos.includes("BACK")) pos = "DEF";
+                    else if (apiPos.includes("MID") || apiPos.includes("FIELD")) pos = "MID";
+                    else if (apiPos.includes("ATT") || apiPos.includes("FOR") || apiPos.includes("STRI")) pos = "FWD";
+
+                    // تسعير ذكي وتلقائي لتناسب ميزانية الـ 100 مليون
+                    let price = 12; // السعر الافتراضي
+                    if (pos === "FWD") price = 18;
+                    if (pos === "MID") price = 15;
+                    if (pos === "DEF") price = 12;
+                    if (pos === "GK") price = 10;
+
+                    // رفع اللاعب مباشرة إلى فرع players في الـ Realtime Database
+                    const playerRef = ref(db, `players/${p.id}`);
+                    set(playerRef, {
+                        id: p.id,
+                        name: p.name || p.shortName,
+                        position: pos,
+                        price: price,
+                        team: teamName,
+                        points: 0
+                    });
+                    count++;
+                });
+
+                log(`🎉 نجاح! تم رفع وتحديث ${count} لاعباً لمنتخب ${teamName} في Firebase بنجاح!`);
+            })
+            .catch(error => {
+                log(`❌ خطأ: ${error.message}`);
+            });
+        };
+    </script>
+</body>
+</html>
